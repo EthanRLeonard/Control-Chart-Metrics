@@ -1,0 +1,144 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+```
+```{r}
+library(data.table)
+library(dplyr)
+library(qcc)
+library(MASS)
+library(graphics)
+Pre=fread(input = "C:\\Users\\ethan\\Downloads\\PreJune3_Pitchdata.csv" )
+Post=fread(input = "C:\\Users\\ethan\\Downloads\\PostJune3rdData_correctfile.csv")
+low1=Pre %>% arrange(xwoba)
+low2=Post %>% arrange(xwoba)
+
+top1=low1[!is.na(low1[,xwoba])]
+top2=low2[!is.na(low2[,xwoba])]
+
+topbefore=tail(top1,20)
+topafter=tail(top2,20)
+
+cat("Best Pitchers' xwoba before June 3rd","\n")
+summary(topbefore[,xwoba])
+cat("Best Pitchers' xwoba after June 3rd","\n")
+summary(topafter[,xwoba])
+
+t.test(x = topbefore[,xwoba],y = topafter[,xwoba],paired = FALSE,var.equal = FALSE)
+
+qqnorm(y = unlist(topbefore[,xwoba]),plot.it = TRUE) 
+qqline(y = unlist(topbefore[,xwoba]))
+
+qqnorm(y = unlist(topafter[,xwoba]),plot.it = TRUE) 
+qqline(y = unlist(topafter[,xwoba]))
+
+shapiro.test(unlist(topbefore[,xwoba]))
+shapiro.test(unlist(topafter[,xwoba]))
+
+sdxwoba1=sd(unlist(top1[,xwoba]))
+sdxwoba2=sd(unlist(top2[,xwoba]))
+
+noNAN_PRE=Pre[!is.na(Pre[,xwoba])]
+noNAN_POST=Post[!is.na(Post[,xwoba])]
+
+ch1=qcc(data = noNAN_PRE[,xwoba],type = "xbar",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdxwoba1)
+ch2=qcc(data = noNAN_POST[,xwoba],type = "xbar",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdxwoba2)
+
+ch3=qcc(data = noNAN_PRE[,xwoba],type = "R",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdxwoba1)
+ch4=qcc(data = noNAN_POST[,xwoba],type = "R",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdxwoba2)
+
+```
+
+
+
+```{r}
+cat("Best Pitchers' spin rate before June 3rd","\n")
+summary(topbefore[,spin_rate])
+cat("Best Pitchers' spin rate after June 3rd","\n")
+summary(topafter[,spin_rate])
+
+t.test(x = top1[,spin_rate],y =top2[,spin_rate],paired = FALSE,var.equal = FALSE)
+
+qqnorm(y = unlist(topbefore[,spin_rate]),plot.it = TRUE) 
+qqline(y = unlist(topbefore[,spin_rate]))
+
+qqnorm(y = unlist(topafter[,spin_rate]),plot.it = TRUE) 
+qqline(y = unlist(topafter[,spin_rate]))
+
+shapiro.test(unlist(topbefore[,spin_rate]))
+shapiro.test(unlist(topafter[,spin_rate]))
+
+sdspin1=sd(unlist(top1[,spin_rate]))
+sdspin2=sd(unlist(top2[,spin_rate]))
+
+ch5=qcc(data = top1[,spin_rate],type = "xbar",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdspin1)
+ch6=qcc(data = top2[,spin_rate],type = "xbar",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdspin2)
+
+ch7=qcc(data = top1[,spin_rate],type = "R",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdspin1)
+ch8=qcc(data = top2[,spin_rate],type = "R",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdspin2)
+
+
+
+```
+```{r}
+Precurve=fread("C:\\Users\\ethan\\Downloads\\Curveball_data_PreJune3.csv")
+Postcurve=fread("C:\\Users\\ethan\\Downloads\\curveballData_postJune3rd.csv")
+
+
+low1=Precurve %>% arrange(spin_rate)
+low2=Postcurve %>% arrange(spin_rate)
+
+top1curve=low1[!is.na(low1[,spin_rate])]
+top2curve=low2[!is.na(low2[,spin_rate])]
+
+topbeforecurve=tail(top1curve,20)
+topaftercurve=tail(top2curve,20)
+
+cat("Best Pitchers' spin rate before June 3rd","\n")
+summary(topbeforecurve[,spin_rate])
+cat("Best Pitchers' spin rate after June 3rd","\n")
+summary(topaftercurve[,spin_rate])
+
+t.test(x = topbeforecurve[,spin_rate],y = topaftercurve[,spin_rate],paired = FALSE,var.equal = FALSE)
+
+qqnorm(y = unlist(topbeforecurve[,spin_rate]),plot.it = TRUE) 
+qqline(y = unlist(topbeforecurve[,spin_rate]))
+
+qqnorm(y = unlist(topaftercurve[,spin_rate]),plot.it = TRUE) 
+qqline(y = unlist(topaftercurve[,spin_rate]))
+
+shapiro.test(unlist(topbeforecurve[,spin_rate]))
+shapiro.test(unlist(topaftercurve[,spin_rate]))
+
+sdxwoba1=sd(unlist(top1curve[,spin_rate]))
+sdxwoba2=sd(unlist(top2curve[,spin_rate]))
+
+noNAN_PREcurve=Precurve[!is.na(Precurve[,spin_rate])]
+noNAN_POSTcurve=Postcurve[!is.na(Postcurve[,spin_rate])]
+
+ch1=qcc(data = noNAN_PREcurve[,spin_rate],type = "xbar",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdxwoba1)
+ch2=qcc(data = noNAN_POSTcurve[,spin_rate],type = "xbar",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdxwoba2)
+
+ch3=qcc(data = noNAN_PREcurve[,spin_rate],type = "R",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdxwoba1)
+ch4=qcc(data = noNAN_POSTcurve[,spin_rate],type = "R",add.stats=TRUE,plot=TRUE,sizes = 3,std.dev = sdxwoba2)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+
